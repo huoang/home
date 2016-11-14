@@ -71,15 +71,15 @@ class CsvData:
             for hosfile in hosfiles:
                 hos = fd.read_dataframe(writepath+hosfile)
                 chos = pd.concat([chos,hos],axis = 0)
-            fd.write_dataframe(hos,outputpath+str(code)+
-                               '_'+year+'.pyr')  
+            fd.write_dataframe(chos,outputpath+str(code)+
+                           '_'+year+'.pyr')  
    
 if __name__ == '__main__':
     
     
     writepath = '/mnt/e/pyr/data/2015perhosproc/'
     
-    
+    '''
     data1501 = CsvData('2015','01',
                        '/mnt/e/data/2015/1501.CSV',
                        261,'x5')    
@@ -106,13 +106,12 @@ if __name__ == '__main__':
     
     data1504.writedf(50000,writepath)
 
-   
+    '''
     CsvData.combinehos('2015','/mnt/e/pyr/data/2015perhos/')
     
     print 'mission accomplished!!!'
     
  
-    
     '''
     
     writepath = '/mnt/e/pyr/data/2014/'
@@ -201,6 +200,26 @@ def yield_df_hos():
     
     for data in df_rep:
         print data 
+        
+################################################################        
+        cfiles = os.listdir(writepath)
+    #   
+        hoscodes = [cfile[0:12] for cfile in cfiles]
+        hoscodes = pd.Series(hoscodes)
+        hoscodes = hoscodes.value_counts().index
+        for code in hoscodes:
+            hosfiles=[filename for filename in 
+                  cfiles if hoscodes[0] in filename]
+            hosfiles.sort()
+            hosfiles.sort(key=len)
+            chos = pd.DataFrame() 
+            for hosfile in hosfiles:
+                hos = fd.read_dataframe(writepath+hosfile)
+                chos = pd.concat([chos,hos],axis = 0)
+            fd.write_dataframe(chos,outputpath+str(code)+
+                           '_'+year+'.pyr')  
+    
+    
      '''
         
         
