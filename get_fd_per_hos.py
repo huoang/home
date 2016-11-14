@@ -19,6 +19,14 @@ class CsvData:
         self.path = path
         self.ncol = int(ncol)
         self.ixcol = ixcol
+    
+    def dfvars(self):
+        dfvars=''
+        for var in range(1,self.ncol+1):
+            dfvars+='x%d,' %var
+        dfvars=dfvars[:len(dfvars)-1]
+        return dfvars
+        
         
     def writedf(self,chunkSize,write_path):
         loop = True
@@ -30,87 +38,80 @@ class CsvData:
                 looptimes += 1
                 df = reader.get_chunk(chunkSize)
                 df.columns = self.dfvars().split(',')
-                try:
-                    ixcode = df[[self.ixcol]]
-                    ixcode.count_values
-                    df_rep = df[[self.ixcol,var]]
-                    df_cols = pd.DataFrame(df_cols)
-                    fd.write_dataframe(df_cols,
-                    writepath+self.year+'_'+
-                    self.season+'_'+var+'.pyr'+
-                    str(looptimes))
-                except ValueError:
+                ixcode = df[[self.ixcol]]
+                ixcode = ixcode.ix[:,self.ixcol]
+                ixcode = ixcode.value_counts().index
+                for code in ixcode:
+                    try:
+                        df_hos = df.ix[df.x5 == code,:]
+                        df_hos = df_hos.astype('str')
+                        fd.write_dataframe(df_hos,
+                                writepath+str(code)+'_'+
+                                self.year+'_'+self.season+
+                                '.pyr'+str(looptimes))
+                    except ValueError:
                         continue   
             except StopIteration:
                 loop =False
                 print"Iteration is stopped."
     
     @classmethod
-    def combinecol(clx,selvar,year,outputpath):
+    def combinehos(clx,year,outputpath):
         cfiles = os.listdir(writepath)
-        selvars = clx.s_selvars(selvar).split(',')
-        single_var=['_'+var+'.' for var in 
-                   selvars]
-        for var in single_var:
-            cols=[filename for filename in 
-                  cfiles if var in filename]
-            cols.sort()
-            ccol = pd.DataFrame() 
-            for col in cols:
-                col_rep = fd.read_dataframe(writepath+col)
-                ccol = pd.concat([ccol,col_rep],axis = 0)
-            fd.write_dataframe(ccol,outputpath+year
-                               +var+'pyr')  
-     
-        
+    #   cfiles.index('CHN') len(hoscodes); len(cfiles); len(hoscodes)
+        hoscodes = [cfile[0:12] for cfile in cfiles]
+        hoscodes = pd.Series(hoscodes)
+        hoscodes = hoscodes.value_counts().index
+        for code in hoscodes:
+            hosfiles=[filename for filename in 
+                  cfiles if code in filename]
+            hosfiles.sort()
+            hosfiles.sort(key=len)
+            chos = pd.DataFrame() 
+            for hosfile in hosfiles:
+                hos = fd.read_dataframe(writepath+hosfile)
+                chos = pd.concat([chos,hos],axis = 0)
+            fd.write_dataframe(hos,outputpath+str(code)+
+                               '_'+year+'.pyr')  
+   
 if __name__ == '__main__':
     
     
-    writepath = '/mnt/e/pyr/data/2015/'
+    writepath = '/mnt/e/pyr/data/2015perhosproc/'
     
-    init_selvar_15= [1,5,2,31,33,34,35,59,
-            64,69,70,71,72]+range(229,259)+[262]
-    fee_vars = range(229,259)
-    drop_vars = 'x229,x230,x240,x242,x243,x247'
+    
     data1501 = CsvData('2015','01',
-                       '/mnt/f/data/2015/1501.CSV',
-                       261,'x5',init_selvar_15,
-                       drop_vars,fee_vars,
-                       'x262')    
+                       '/mnt/e/data/2015/1501.CSV',
+                       261,'x5')    
     
     data1501.writedf(50000,writepath)
   
+
     data1502 = CsvData('2015','02',
-                       '/mnt/f/data/2015/1502.CSV',
-                       261,'x5',init_selvar_15,
-                       drop_vars,fee_vars,
-                       'x262')    
+                       '/mnt/e/data/2015/1502.CSV',
+                       261,'x5')    
     
     data1502.writedf(50000,writepath)
     
     
     data1503 = CsvData('2015','03',
-                       '/mnt/f/data/2015/1503.CSV',
-                       261,'x5',init_selvar_15,
-                       drop_vars,fee_vars,
-                       'x262')    
+                       '/mnt/e/data/2015/1503.CSV',
+                       261,'x5')    
     
     data1503.writedf(50000,writepath)
      
     data1504 = CsvData('2015','04',
-                       '/mnt/f/data/2015/1504.CSV',
-                       261,'x5',init_selvar_15,
-                       drop_vars,fee_vars,
-                       'x262')    
+                       '/mnt/e/data/2015/1504.CSV',
+                       261,'x5')    
     
     data1504.writedf(50000,writepath)
-    
-    combine_var_15 = [1,2,31,33,34,35,59,
-            64,69,70,71,72]+range(229,259)+[262]
-    CsvData.combinecol(combine_var_15,'2015',
-                       '/mnt/e/pyr/data/2015x/')
+
+   
+    CsvData.combinehos('2015','/mnt/e/pyr/data/2015perhos/')
     
     print 'mission accomplished!!!'
+    
+ 
     
     '''
     
@@ -170,21 +171,36 @@ if __name__ == '__main__':
                        '/mnt/e/pyr/data/2013x/')
     print 'mission accomplished!!!' 
     '''
-    reader = pd.read_csv('/mnt/f/data/2015/1502.CSV',
+    
+    '''
+    reader = pd.read_csv('/mnt/e/data/2015/1502.CSV',
                              iterator = True)
     chunkSize = 50000
     
     df = reader.get_chunk(chunkSize)
     df.columns = s_dfvars(261).split(',')
     
+def yield_df_hos():
     ixcol = 'x5'
     ixcode = df[[ixcol]]
     ixcode = ixcode.ix[:,ixcol]
-    ixcode.value_counts()
-    type(ixcode)
-
-    import shelve
+    ixcode = ixcode.value_counts().index
+    for code in ixcode:
+        try:
+            df_hos = df.ix[df.x5 == ixcode[0],:]
+            df_hos = pd.DataFrame(df_hos)
+            df_hos = df_hos.astype('str')
+            fd.write_dataframe(df_hos,
+                    writepath+str(ixcode[0])+'_'+
+                    '2015'+'_'+'02'+
+                    '.pyr'+'1')
+        except ValueError:
+            continue   
     
-    f = shelve.open('/mnt/f/data/2015/1502.CSV')
+    df_rep = yield_df_hos()
+    
+    for data in df_rep:
+        print data 
+     '''
         
         
