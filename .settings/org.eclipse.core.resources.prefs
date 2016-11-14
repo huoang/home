@@ -1,14 +1,21 @@
+=\=\=\=\=\=\=
+<<<<<<<=HEAD
+>>>>>>>=8522c97044a521a38196db2eaea7436e2e984d21
 eclipse.preferences.version=1
 encoding/<project>=UTF-8
 encoding/CleaningData.py=utf-8
 encoding/ComebineRecs.py=utf-8
+<<<<<<< HEAD
 encoding/FeatherData.py=utf-8
 encoding/GetCsvPerHos.py=utf-8
+=======
+>>>>>>> 75c2f100f238942a63178c36a63421c92571af5c
 encoding/GetDataFrame.py=utf-8
 encoding/cio.py=utf-8
 encoding/debug.py=utf-8
 encoding/featherdata.py=utf-8
 encoding/getCsvData.py=utf-8
+encoding/get_fd_per_hos.py=utf-8
 encoding/gethoscode.py=utf-8
 encoding/getrecs.py=utf-8
 encoding/global_list.py=utf-8
