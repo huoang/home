@@ -14,10 +14,51 @@ xfiles.sort()
 xfiles.sort(key=len)
 len(xfiles)
 col229 =  fd.read_dataframe(path+xfiles[12])
+col229[col229['x5'] == '410000000624']
+col229.iloc[col229.vericol == True,:]
+
+
 col262 = fd.read_dataframe(path+xfiles[42])
 col229['vericol'] = col262.x262
 col229[col229['vericol'] == 1]
 
+col229.vericol.value_counts()
+
+veri_true=col229.vericol.isin(['True'])
+
+fee_mis_hoslist = col229[veri_true].x5.value_counts()
+hosnames = pd.read_csv('/mnt/e/R/rdoc/Hosnames.csv')
+
+hosnames.columns = ['id','name']
+
+hosnames = hosnames.set_index('id')
+
+hosnames.ix[410000207738]
+
+fee_mis_hoslist = pd.DataFrame(fee_mis_hoslist)
+
+
+
+fee_mis_ix = hosnames.index.isin(
+    fee_mis_hoslist.index.astype('int'))
+
+fee_mis_hosnames = hosnames[fee_mis_ix]
+
+fee_mis_hoslist.index = fee_mis_hoslist.index.astype(int)
+fee_mis_hos = pd.merge(fee_mis_hosnames,fee_mis_hoslist,
+         left_index = True,right_index = True
+         )
+
+fee_mis_hos.sort(key=len(fee_mis_hos.name))
+
+fee_mis_hosnames.index
+
+
+
+
+
+
+col229.vericol.count(None)
 col229['vericol'] == True
 def colsums(path,xfiles):
     rlts = list()

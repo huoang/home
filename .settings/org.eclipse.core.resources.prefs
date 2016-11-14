@@ -3,6 +3,7 @@ encoding/<project>=UTF-8
 encoding/CleaningData.py=utf-8
 encoding/ComebineRecs.py=utf-8
 encoding/FeatherData.py=utf-8
+encoding/GetCsvPerHos.py=utf-8
 encoding/GetDataFrame.py=utf-8
 encoding/cio.py=utf-8
 encoding/debug.py=utf-8
