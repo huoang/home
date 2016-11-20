@@ -4,118 +4,123 @@
 
 
 import pandas as pd
-import feather as fd
+import numpy as np
+import tables as tm
+import h5py as h5
 import os
 
 
-path = '/mnt/e/pyr/data/2015x/'
-xfiles = os.listdir(path)
-xfiles.sort()
-xfiles.sort(key=len)
-len(xfiles)
-col229 =  fd.read_dataframe(path+xfiles[12])
-col229[col229['x5'] == '410000000624']
-col229.iloc[col229.vericol == True,:]
+hdffile = 'E:/pyr/data/hdf5/R_fee_15.h5'
+
+fee_15 = pd.read_hdf(hdffile,'fee_15')
+
+fee_15.ttlfee = fee_15.ttlfee.astype('float')
+
+fee15 = fee_15[fee_15.ttlfee>0]
+
+fee_15.ttlfee.median()
+
+fee_15.ttlfee.mean()
+
+fin_rep15 = pd.read_hdf(hdffile,'fin_fee_15')
+
+fin_rep15.ix[fin_rep15.X1 == '',:]
+
+hos_dic = pd.read_hdf("e:/pyr/data/hdf5/R_fee_15.h5",
+                      'hos_dic')
+
+hos_dic.columns =['hoscode','hosname'] 
+
+hosdic = pd.Series(hos_dic.hosname)
+
+hosdic.index = hos_dic['hoscode']
+
+hosdic['410000002236']
+
+cfiles = os.listdir('e:/pyr/data/y2015/2015perhos/')
+#   cfiles.index('CHN') len(code15); len(cfiles); len(code15)
+code15 = [cfile[0:12] for cfile in cfiles]
+
+code15 = pd.Series(code15)
+
+code15 = code15.value_counts().index
+
+hosname15 = [hosdic[code] for code in code15
+            if code in hosdic.index]
+
+hoscode15 = [code for code in code15
+            if code in hosdic.index]
+
+hos15 = pd.Series(hosname15,index = hoscode15)
+
+hosdic15 = dict(zip(hoscode15,hosname15))
+
+hosname15.index('')
+
+hos15.index[237]
 
 
-col262 = fd.read_dataframe(path+xfiles[42])
-col229['vericol'] = col262.x262
-col229[col229['vericol'] == 1]
 
-col229.vericol.value_counts()
+for X in fin_rep15.columns[1:]:
+    fin_rep15.ix[:,X] = fin_rep15.ix[:,X].str.replace(',','')
 
-veri_true=col229.vericol.isin(['True'])
+pyh5file = 'E:/pyr/data/hdf5/py_fee_15.h5'
 
-fee_mis_hoslist = col229[veri_true].x5.value_counts()
-hosnames = pd.read_csv('/mnt/e/R/rdoc/Hosnames.csv')
+pyfee15 = pd.HDFStore(pyh5file)
 
-hosnames.columns = ['id','name']
+pyfee15.append('py_fee_15', fin_rep15, 
+                    data_columns=fin_rep15.columns)
 
-hosnames = hosnames.set_index('id')
+pyfee15.close()
 
-hosnames.ix[410000207738]
-
-fee_mis_hoslist = pd.DataFrame(fee_mis_hoslist)
+pyfee15.open()
 
 
+fin_rep15.to_hdf('e:/pyr/data/hdf5/py_fee_15.h5',
+                 'fin_rep15',format='table',
+                 data_columns=True)
 
-fee_mis_ix = hosnames.index.isin(
-    fee_mis_hoslist.index.astype('int'))
+h5file = 'e:/pyr/data/hdf5/r_perhos.h5'
 
-fee_mis_hosnames = hosnames[fee_mis_ix]
+nyyy = pd.read_hdf(h5file,'410000002820')
 
-fee_mis_hoslist.index = fee_mis_hoslist.index.astype(int)
-fee_mis_hos = pd.merge(fee_mis_hosnames,fee_mis_hoslist,
-         left_index = True,right_index = True
-         )
-
-fee_mis_hos.sort(key=len(fee_mis_hos.name))
-
-fee_mis_hosnames.index
+xmyy = pd.read_hdf(h5file,'')
 
 
+fin_rep15.to_hdf('e:/pyr/data/hdf5/py_fee_15.h5',
+                 'fin_rep15',format='table',
+                 data_columns=True)
+
+
+store_perhos_15 = pd.HDFStore(
+    'e:/pyr/data/hdf5/py_perhos_15.h5')
+
+py_perhos_15.append('nyyy', store_perhos_15, 
+                    data_columns=nyyy.columns,
+                    dtype = 'table')
+
+
+nyyy.to_hdf('e:/pyr/data/hdf5/py_perhos_15',
+                 '410000002820',mode = 'w',
+                 data_columns = True,
+                 format = 'table',
+                 complevel = 9L,
+                 complib = 'zlib')
+
+
+
+py_perhos_15.close()
+
+py_perhos_15.open()
+
+help(nyyy.to_hdf)
+
+h5file = h5.File('e:/pyr/data/hdf5/h5_fee.h5','w')
+
+h5file.create_dataset('410000002820', data = nyyy)
 
 
 
 
-col229.vericol.count(None)
-col229['vericol'] == True
-def colsums(path,xfiles):
-    rlts = list()
-    for xfile in xfiles:
-        col_rep =  fd.read_dataframe(path+xfile)
-        col = col_rep.iloc[:,1]
-        col = col.astype('float')
-        col[col > 410000000000] = 0
-        colsum = col.sum()
-        rlts.append(colsum)
-    return rlts
 
-def s_selvars(selvar):
-        dfvars=''
-        for var in selvar:
-            dfvars+='x%d,' %var
-        dfvars=dfvars[:len(dfvars)-1]
-        return dfvars    
-selvar = s_selvars(range(229,259))
-
-colsum = colsums(path,xfiles[12:])
-
-
-colsum = pd.Series(colsum)
-
-
-[round(x,2) for x in colsum]
-colsum.index = selvar.split(',')
-colsum2 = colsum.drop(['x229','x230','x240',
-             'x242','x243','x247'])
-colsum2.sum()
-colsum3 = colsum.drop(['x229','x230'])
-colsum3.sum()
-diff = colsum['x229'] - colsum2.sum()
-round(diff,4)
-
-varlist = pd.read_csv('/mnt/e/pyr/data/pyvarlist.csv')
-varlist = varlist.chnnames
-varlist = pd.Series(varlist)
-varlist.index = selvar.split(',')
-
-
-col_rep = fd.read_dataframe(path+xfiles[])
-col = col_rep.iloc[:,1]
-col = col.astype('float')
-len(col[col.isnull()])
-
-col.sum()
-
-col_rep.ix[5288017]
-col_rep[col_rep.x229 == "nan"]
-col = col_rep.x229.astype('float')
-col[col == 0].count()
-rlts.append(0)
-col[col.isnull()]
-col[col == 0]
-
-#c(-1,-2,-12,-14,-15,-19),]
-col.isnull
 

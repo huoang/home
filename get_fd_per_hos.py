@@ -203,10 +203,13 @@ def yield_df_hos():
         
 ################################################################        
         cfiles = os.listdir(writepath)
-    #   
+   
         hoscodes = [cfile[0:12] for cfile in cfiles]
+   
         hoscodes = pd.Series(hoscodes)
+   
         hoscodes = hoscodes.value_counts().index
+   
         for code in hoscodes:
             hosfiles=[filename for filename in 
                   cfiles if hoscodes[0] in filename]
