@@ -8,6 +8,9 @@ import numpy as np
 import tables as tm
 import h5py as h5
 import os
+import feather as ft
+import matplotlib.pyplot as plt
+from feather.api import read_dataframe
 
 
 hdffile = 'E:/pyr/data/hdf5/R_fee_15.h5'
@@ -26,7 +29,7 @@ fin_rep15 = pd.read_hdf(hdffile,'fin_fee_15')
 
 fin_rep15.ix[fin_rep15.X1 == '',:]
 
-hos_dic = pd.read_hdf("e:/pyr/data/hdf5/R_fee_15.h5",
+hos_dic = pd.read_hdf("/mnt/e/pyr/data/hdf5/R_fee_15.h5",
                       'hos_dic')
 
 hos_dic.columns =['hoscode','hosname'] 
@@ -55,7 +58,7 @@ hos15 = pd.Series(hosname15,index = hoscode15)
 
 hosdic15 = dict(zip(hoscode15,hosname15))
 
-hosname15.index('')
+
 
 hos15.index[237]
 
@@ -119,7 +122,51 @@ h5file = h5.File('e:/pyr/data/hdf5/h5_fee.h5','w')
 
 h5file.create_dataset('410000002820', data = nyyy)
 
+import ipython --pylab
 
+
+import matplotlib.pyplot as plt
+
+dir(plt)
+
+ipython --pylab
+
+plt.plot(np.arange(10))
+
+
+files = os.listdir("/mnt/e/pyr/data/y2015/2015x")
+
+files.sort()
+
+files.sort(key = len)
+
+files.index('2015_x229.pyr')
+
+ttl_fee = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x229.pyr')
+
+
+hosix15 = ttl_fee.x5.value_counts().index
+
+hos_dic
+
+hosix15 = list(hosix15)
+
+hos_dic.columns = ['code','name']
+
+zd1 = hos_dic.ix[hos_dic.code == hosix15[0],:].name
+
+zd11 = zd1.values.astype('str')
+
+print ''.join(zd11).decode('utf-8')
+
+zd1 = hos_dic.ix[0,:]
+
+ttl_fee.head(10)
+
+ttl_fee['hosname'] = ttl_fee['x5'].map(hos_dic15)
+
+hos_dic15 = dict(zip(hos_dic.code,hos_dic.name))
 
 
 
