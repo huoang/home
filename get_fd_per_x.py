@@ -122,10 +122,11 @@ class CsvData:
 if __name__ == '__main__':
     
     
-    writepath = '/mnt/e/pyr/data/2015/'
+    writepath = '/mnt/e/pyr/data/y2015/2015/'
     
-    init_selvar_15= [1,5,2,31,33,34,35,59,
-            64,69,70,71,72]+range(229,259)+[262]
+    #init_selvar_15= [1,5,2,31,33,34,35,59,
+    #        64,69,70,71,72]+range(229,259)+[262]
+    init_selvar_15 = [5,32]
     fee_vars = range(229,259)
     drop_vars = 'x229,x230,x240,x242,x243,x247'
     data1501 = CsvData('2015','01',
@@ -161,10 +162,12 @@ if __name__ == '__main__':
     
     data1504.writedf(50000,writepath)
     
-    combine_var_15 = [1,2,31,33,34,35,59,
-            64,69,70,71,72]+range(229,259)+[262]
+    #combine_var_15 = [1,2,31,33,34,35,59,
+    #        64,69,70,71,72]+range(229,259)+[262]
+            
+    combine_var_15 = [32]
     CsvData.combinecol(combine_var_15,'2015',
-                       '/mnt/e/pyr/data/2015x/')
+                       '/mnt/e/pyr/data/y2015/2015x/')
     
     print 'mission accomplished!!!'
     
@@ -226,9 +229,7 @@ if __name__ == '__main__':
                        '/mnt/e/pyr/data/2013x/')
     print 'mission accomplished!!!' 
     '''
-<<<<<<< HEAD
-  
-=======
+
     '''
 ########################splitting#########################
 def dfvars(ncol):
@@ -276,7 +277,7 @@ def feevars(fee_vars):
 feevars(fee_vars)
 
 '''
->>>>>>> 8522c97044a521a38196db2eaea7436e2e984d21
+
 
 
 

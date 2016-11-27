@@ -5,12 +5,12 @@
 
 import pandas as pd
 import numpy as np
-import tables as tm
+import tables as tbl
 import h5py as h5
 import os
 import feather as ft
 import matplotlib.pyplot as plt
-from feather.api import read_dataframe
+
 
 
 hdffile = 'E:/pyr/data/hdf5/R_fee_15.h5'
@@ -28,9 +28,6 @@ fee_15.ttlfee.mean()
 fin_rep15 = pd.read_hdf(hdffile,'fin_fee_15')
 
 fin_rep15.ix[fin_rep15.X1 == '',:]
-
-hos_dic = pd.read_hdf("/mnt/e/pyr/data/hdf5/R_fee_15.h5",
-                      'hos_dic')
 
 hos_dic.columns =['hoscode','hosname'] 
 
@@ -142,8 +139,6 @@ files.sort(key = len)
 
 files.index('2015_x229.pyr')
 
-ttl_fee = ft.read_dataframe(
-    '/mnt/e/pyr/data/y2015/2015x/2015_x229.pyr')
 
 
 hosix15 = ttl_fee.x5.value_counts().index
@@ -158,7 +153,7 @@ zd1 = hos_dic.ix[hos_dic.code == hosix15[0],:].name
 
 zd11 = zd1.values.astype('str')
 
-print ''.join(zd11).decode('utf-8')
+
 
 zd1 = hos_dic.ix[0,:]
 
@@ -166,8 +161,68 @@ ttl_fee.head(10)
 
 ttl_fee['hosname'] = ttl_fee['x5'].map(hos_dic15)
 
+
+
+hos_dic = pd.read_hdf("/mnt/e/pyr/data/hdf5/R_fee_15.h5",
+                      'hos_dic')
+
+hos_dic.columns = ['code','name']
+
 hos_dic15 = dict(zip(hos_dic.code,hos_dic.name))
 
+ttl_fee = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x229.pyr')
 
+veri = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x262.pyr')
+
+ttl_fee = pd.concat([ttl_fee,veri],axis=1)
+
+ttl_fee = ttl_fee.ix[:,[0,1,3]]
+
+ttl_fee = pd.DataFrame(ttl_fee,columns = 
+                       ['x5','hosname','x229'])
+
+
+ttl_fee['hosname'] = ttl_fee['x5'].map(hos_dic15)
+
+ttl_fee.columns = ['hoscode','ttlfee','veri','hosname']
+
+ttl_fee.ttlfee = ttl_fee.ttlfee.astype('float')
+
+ttl_fee = ttl_fee.ix[ttl_fee.veri.isin(['False'])]
+
+ttl_fee = ttl_fee.ix[ttl_fee.ttlfee > 0,:]
+
+ttl_fee = ttl_fee.ix[ttl_fee.ttlfee < 1000000,:]
+
+ttl_fee.ix[ttl_fee.ttlfee.isnull()]
+
+hos15 = ttl_fee.ix[:,[0,3]]
+
+code15 = hos15.hoscode.value_counts().index
+
+name15 = hos15.hosname.value_counts().index
+
+hos15_dic = dict(zip(code15,name15))
+
+hos15_dic.keys().index('410000000624')
+
+hos15_dic.values().index('河南大学第一附属医院')
+
+len(hos15_dic)
+
+hos_name_15 = pd.DataFrame()
+for hos in code15:
+    hos_name_rep = hos15.ix[hos15.hoscode == hos,:][0:1]
+    hos_name_15 = pd.concat([hos_name_rep,hos_name_15]
+                        ,axis = 0)
+
+ttl_fee.ix[ttl_fee.hoscode == '410000207180',:]
+
+ttl_fee = ttl_fee[ttl_fee.hosname.isnull() == False]
+
+ft.write_dataframe(ttl_fee, 
+        '/mnt/e/pyr/data/procdata/py_ttl_fee.pyr')
 
 
