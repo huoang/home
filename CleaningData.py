@@ -170,23 +170,40 @@ hos_dic.columns = ['code','name']
 
 hos_dic15 = dict(zip(hos_dic.code,hos_dic.name))
 
-ttl_fee = ft.read_dataframe(
+ttlfee = ft.read_dataframe(
     '/mnt/e/pyr/data/y2015/2015x/2015_x229.pyr')
 
 veri = ft.read_dataframe(
     '/mnt/e/pyr/data/y2015/2015x/2015_x262.pyr')
 
-ttl_fee = pd.concat([ttl_fee,veri],axis=1)
+nm = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x32.pyr')
 
-ttl_fee = ttl_fee.ix[:,[0,1,3]]
+gender = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x33.pyr')
+    
+birthdate = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x34.pyr')
+    
 
-ttl_fee = pd.DataFrame(ttl_fee,columns = 
-                       ['x5','hosname','x229'])
+record  = ft.read_dataframe(
+    '/mnt/e/pyr/data/y2015/2015x/2015_x31.pyr')
+ttl_fee = pd.DataFrame()      
+
+ttl_fee = pd.concat([ttlfee,record,nm,gender,
+                     birthdate,veri],axis=1)
+
+ttl_fee = ttl_fee.ix[:,[0,1,3,5,7,9,11]]
 
 
 ttl_fee['hosname'] = ttl_fee['x5'].map(hos_dic15)
 
-ttl_fee.columns = ['hoscode','ttlfee','veri','hosname']
+ttl_fee.columns = ['hoscode','ttlfee','rec','name','gen',
+                   'bird','veri','hosname']
+
+ttl_fee = pd.DataFrame(ttl_fee,columns = ['hoscode','hosname',
+                                'rec','name','gen',
+                          'bird','ttlfee','veri'])
 
 ttl_fee.ttlfee = ttl_fee.ttlfee.astype('float')
 
@@ -196,7 +213,7 @@ ttl_fee = ttl_fee.ix[ttl_fee.ttlfee > 0,:]
 
 ttl_fee = ttl_fee.ix[ttl_fee.ttlfee < 1000000,:]
 
-ttl_fee.ix[ttl_fee.ttlfee.isnull()]
+ttl_fee = ttl_fee[ttl_fee.hosname.isnull() == False]
 
 hos15 = ttl_fee.ix[:,[0,3]]
 
@@ -204,13 +221,6 @@ code15 = hos15.hoscode.value_counts().index
 
 name15 = hos15.hosname.value_counts().index
 
-hos15_dic = dict(zip(code15,name15))
-
-hos15_dic.keys().index('410000000624')
-
-hos15_dic.values().index('河南大学第一附属医院')
-
-len(hos15_dic)
 
 hos_name_15 = pd.DataFrame()
 for hos in code15:
@@ -218,9 +228,9 @@ for hos in code15:
     hos_name_15 = pd.concat([hos_name_rep,hos_name_15]
                         ,axis = 0)
 
-ttl_fee.ix[ttl_fee.hoscode == '410000207180',:]
-
-ttl_fee = ttl_fee[ttl_fee.hosname.isnull() == False]
+ttl_fee = pd.DataFrame(ttl_fee,columns = ['hoscode','hosname',
+                                'rec','name','gen',
+                          'bird','ttlfee'])
 
 ft.write_dataframe(ttl_fee, 
         '/mnt/e/pyr/data/procdata/py_ttl_fee.pyr')
